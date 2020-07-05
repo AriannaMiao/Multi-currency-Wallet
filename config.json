@@ -1,0 +1,22 @@
+{
+    "host": "localhost",
+    "port": "4000",
+    "jwt_expiretime": "36000",
+    "channelName": ["mychannel", "mychannelnew"],
+    "CC_SRC_PATH": "../artifacts",
+    "eventWaitTime": "30000",
+    "admins": [{
+        "username": "admin",
+        "secret": "adminpw"
+    }],
+    "connection-options": {
+        "grpc.max_receive_message_length": -1,
+        "grpc.max_send_message_length": -1,
+        "grpc.keepalive_time_ms": 120000,
+        "grpc.http2.min_time_between_pings_ms": 120000,
+        "grpc.keepalive_timeout_ms": 20000,
+        "grpc.http2.max_pings_without_data": 0,
+        "grpc.keepalive_permit_without_calls": 1
+    }
+
+}
