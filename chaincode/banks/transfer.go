@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
@@ -18,7 +20,6 @@ type SmartContract struct {
 //Define the bank structure
 type Bank struct {
 	Name string `json:"name"`
-	BankID string `json:"bankID`
 	Region string `json:"region"`
 	Currency string `json:"currency"` //Currency type
 	Reserves float64 `json:"reserves"`
@@ -31,7 +32,7 @@ type Account struct {
 	Region string `json:"region"`
 	Currency string `json:"currency"` //Currency type
 	Balance float64 `json:"balance"`
-	BankID string `json:"bankID"` 
+	BankName string `json:"bankName"` 
 }
 
 type Forex struct {
@@ -50,9 +51,7 @@ func (t *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	// Retrieve the requested function and arguments
 	function, args := APIstub.GetFunctionAndParameters()
 
-	if function == "initLedger" {
-		return t.initLedger(APIstub)
-	} else if function == "createBank" {
+	if function == "createBank" {
 		return t.createBank(APIstub, args)
 	} else if function == "createAccount" {
 		return t.createAccount(APIstub, args)
@@ -70,36 +69,6 @@ func (t *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 }
 
 //Realize the functions
-func (t *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
-	banks := []Bank{
-		{Name: "BOA", BankID: "US_001", Region: "US", Currency: "USD", Reserves: 1000000.0},
-		{Name: "BOUK", BankID: "UK_001", Region: "UK", Currency: "GBP", Reserves: 1000000.0},
-		{Name: "BOJ", BankID: "Japan_001", Region: "JAPAN", Currency: "JPY", Reserves: 10000000.0},
-	}
-
-	accounts := []Account{
-		{Name: "US_John", CustID: "001", Region: "US", Currency: "USD", Balance: 10000.0, BankID: "US_Bank01"},
-		{Name: "US_Alice", CustID: "002", Region: "US", Currency: "USD", Balance: 10000.0, BankID: "US_Bank01"},
-		{Name: "UK_John", CustID: "001", Region: "UK", Currency: "GBP", Balance: 10000.0, BankID: "UK_Bank01"},
-		{Name: "UK_Alice", CustID: "002", Region: "UK", Currency: "GBP", Balance: 10000.0, BankID: "UK_Bank01"},
-		{Name: "JPY_John", CustID: "001", Region: "Japan", Currency: "JPY", Balance: 1000000.0, BankID: "Japan_Bank01"},
-		{Name: "JPY_Alice", CustID: "002", Region: "Japan", Currency: "JPY", Balance: 1000000.0, BankID: "Japan_Bank01"},
-	}
-
-	forex := []Forex{
-		{Pair: "RMB:HKD", Rate: 1.0925},
-		{Pair: "HKD:RMB", Rate: 0.9153},
-		{Pair: "HKD:USD", Rate: 0.1290},
-		{Pair: "USD:HKD", Rate: 7.7501},
-	}
-
-	writeForexToLedger(APIstub, forex)
-	writeBankToLedger(APIstub, banks)
-	writeAccountToLedger(APIstub, accounts)
-
-	return shim.Success(nil)
-}
-
 func (t *SmartContract) createForex(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 	if len(args) != 2 {
 		return shim.Error("Incorrect number of arguments for creating a forex (Expecting 2).")
@@ -109,18 +78,36 @@ func (t *SmartContract) createForex(APIstub shim.ChaincodeStubInterface, args []
 	forex := []Forex{{Pair: args[0], Rate: rate}}
 
 	writeForexToLedger(APIstub, forex)
+
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	eventLog := "Record the exchange pair " + args[0] + " with rate " + args[1] + " at " + timeStr + "."
+	logAsBytes := []byte(eventLog)
+    eventErr := APIstub.SetEvent("createForexEvent", logAsBytes)
+    if ( eventErr != nil ) {
+    	return shim.Error("event error!");
+    }
+
 	return shim.Success(nil)
 }
 
 func (t *SmartContract) createBank(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
-	if len(args) != 5 {
-		return shim.Error("Incorrect number of arguments for creating a bank (Expecting 5).")
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments for creating a bank (Expecting 4).")
 	}
 
-	reserves, _ := strconv.ParseFloat(args[4], 64)
-	banks := []Bank{Bank{Name: args[0], BankID: args[1], Region: args[2], Currency: args[3], Reserves: reserves}}
+	reserves, _ := strconv.ParseFloat(args[3], 64)
+	banks := []Bank{Bank{Name: args[0], Region: args[1], Currency: args[2], Reserves: reserves}}
 
 	writeBankToLedger(APIstub, banks)
+
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	eventLog := "Create bank user " + args[0] + " of currency " + args[2] + " at " + timeStr + "."
+	logAsBytes := []byte(eventLog)
+    eventErr := APIstub.SetEvent("createBankEvent", logAsBytes)
+    if ( eventErr != nil ) {
+    	return shim.Error("event error!");
+    }
+    
 	return shim.Success(nil)
 }
 
@@ -130,9 +117,18 @@ func (t *SmartContract) createAccount(APIstub shim.ChaincodeStubInterface, args 
 	}
 
 	balance, _ := strconv.ParseFloat(args[4], 64)
-	accounts := []Account{{Name: args[0], CustID: args[1], Region: args[2], Currency: args[3], Balance: balance, BankID: args[5]}}
+	accounts := []Account{{Name: args[0], CustID: args[1], Region: args[2], Currency: args[3], Balance: balance, BankName: args[5]}}
 
 	writeAccountToLedger(APIstub, accounts)
+
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	eventLog := "Create account " + args[0] + " of bank " + args[5] + " at " + timeStr + "."
+	logAsBytes := []byte(eventLog)
+    eventErr := APIstub.SetEvent("createAccountEvent", logAsBytes)
+    if ( eventErr != nil ) {
+    	return shim.Error("event error!");
+    }
+
 	return shim.Success(nil)
 }
 
@@ -177,7 +173,7 @@ func (t *SmartContract) pay(APIstub shim.ChaincodeStubInterface, args []string) 
 	fromCustomerCustID := fromCustomer.CustID
 	fromCurrency := fromCustomer.Currency
 	fromBalance := float64(fromCustomer.Balance)
-	fromBank := fromCustomer.BankID
+	fromBank := fromCustomer.BankName
 
 	//check if customer has enough balance to cover the payment
 	if fromBalance < payAmount {
@@ -194,12 +190,22 @@ func (t *SmartContract) pay(APIstub shim.ChaincodeStubInterface, args []string) 
 
 	json.Unmarshal(toCustAsBytes, &toCustomer)
 	toCustomerName := toCustomer.Name
+	toCustomerCustID := toCustomer.CustID
+
+	if ( fromCustomerCustID != toCustomerCustID ) {
+		errMsg := "You can only transfer to your own account."
+		return shim.Error(errMsg)
+	}
+
 	toCurrency := toCustomer.Currency
 	toBalance := float64(toCustomer.Balance)
-	toBank := toCustomer.BankID
+	toBank := toCustomer.BankName
 
 	//get exchange rate from the ledger
 	toForexPairAsBytes, _ := APIstub.GetState(fromCurrency + ":" + toCurrency)
+	if ( toForexPairAsBytes == nil ) {
+		return shim.Error("No forex rate yet.")
+	}
 	forexPair := Forex{}
 	json.Unmarshal(toForexPairAsBytes, &forexPair)
 	exchangeRate := forexPair.Rate
@@ -213,7 +219,7 @@ func (t *SmartContract) pay(APIstub shim.ChaincodeStubInterface, args []string) 
 
 	//check if bank has reserves to cover the transfer
 	if fromBankReserves < payAmount {
-		errMsg := "Insufficent funds in bank reserves: " + fromCustomerBank.Name + " Bank ID: " + fromCustomerBank.BankID
+		errMsg := "Insufficent funds in bank reserves: " + fromCustomerBank.Name
 		return shim.Error(errMsg)
 	}
 
@@ -260,6 +266,15 @@ func (t *SmartContract) pay(APIstub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error("Fail at last.")
 	}
 
+	CustName := strings.Split(fromCustomerName, "_")[0]
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	eventLog := CustName + " transfer money from bank " + fromBank + " to bank " + toBank + " at " + timeStr + "."
+	logAsBytes := []byte(eventLog)
+    eventErr := APIstub.SetEvent("transferEvent", logAsBytes)
+    if ( eventErr != nil ) {
+    	return shim.Error("event error!");
+    }
+
 	return shim.Success(nil)
 }
 
@@ -286,7 +301,7 @@ func writeForexToLedger(APIstub shim.ChaincodeStubInterface, forex []Forex) sc.R
 
 func writeBankToLedger(APIstub shim.ChaincodeStubInterface, banks []Bank) sc.Response {
 	for i := 0; i < len(banks); i ++ {
-		key := banks[i].BankID
+		key := banks[i].Name
 		check, _ := APIstub.GetState(key)
 
 		if check == nil { //it is not already present
@@ -305,8 +320,14 @@ func writeBankToLedger(APIstub shim.ChaincodeStubInterface, banks []Bank) sc.Res
 
 func writeAccountToLedger(APIstub shim.ChaincodeStubInterface, accounts []Account) sc.Response {
 	for i := 0; i < len(accounts); i ++ {
-		key := accounts[i].Name + "_" + accounts[i].CustID
+		key := accounts[i].Name + "_" + accounts[i].BankName + "_" + accounts[i].CustID
 		check, _ := APIstub.GetState(key)
+
+		keyBank := accounts[i].BankName
+		checkb, _ := APIstub.GetState(keyBank)
+		if checkb == nil {
+			return shim.Error("Bank has not existed.")
+		}
 
 		if check == nil { //it is not already present
 			json_line, _ := json.Marshal(accounts[i])
