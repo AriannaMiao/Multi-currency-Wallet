@@ -156,12 +156,26 @@ curl -s -X POST \
 
 You can also interact with the network by sending requests or using Postman.
 
-### Run the Wallet
-
-
-
 ### Run a Test Script
 
+We have written an script to automatically config the network.
+```bash
+./start.sh
+```
+After that, a test model would be successfully imployed. You can modify the script or using the command line to interacte as your interest.
+
+
+### Run the Wallet
+
+Then we can test the wallet.
+
+First, open your chrome in the method of 
+```bash
+./chrome --allow-file-access-from-files
+```
+and pull the ```UI/user.html``` into it.
+
+You can test the Wallet with the Username "Arianna" and CustID "001".
 
 
 ### Claim

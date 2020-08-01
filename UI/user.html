@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="css/input_style.css">
+    <!-- HTML5 Shiv 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+
+    <style type="text/css">
+        .demo{ background: #ecedef; padding: 1.5em 0;}
+        .divcss5-bottom{ margin-top:20px; margin-left: 28px; margin-bottom: 10px;}
+        .pricingTable{
+            border-radius: .7rem;
+            text-align: center;
+            background: #fff;
+            padding: 30px 0;
+        }
+        .pricingTable .title{
+            font-size: 22px;
+            font-weight: 600;
+            color: #2e282a;
+            text-transform: uppercase;
+            margin: 0 0 30px 0;
+        }
+        .pricingTable .price-value{
+            padding: 30px 0;
+            background: #191970;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .pricingTable .price-value:before{
+            content: "";
+            border-top: 15px solid #fff;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            position: absolute;
+            top: 0;
+            left: 46%;
+        }
+        .pricingTable .month{
+            display: block;
+            font-size: 15px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .pricingTable .amount{
+            display: inline-block;
+            font-size: 50px;
+            color: #fff;
+            position: relative;
+        }
+        .pricingTable .currency{
+            position: absolute;
+            top: -1px;
+            left: -35px;
+        }
+        .pricingTable .value{
+            font-size: 20px;
+            position: absolute;
+            top: 21px;
+            right: -27px;
+        }
+        .pricingTable .pricing-content{
+            padding: 0;
+            margin: 0 0 30px 0;
+            list-style: none;
+        }
+        .pricingTable .pricing-content li{
+            font-size: 16px;
+            color: #868686;
+            line-height: 35px;
+        }
+        .pricingTable .pricingTable-signup{
+            display: inline-block;
+            padding: 8px 40px;
+            background: #7B68EE;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: capitalize;
+            border: 2px solid #7B68EE;
+            border-radius: 30px;
+            transition: all 0.5s ease 0s;
+        }
+        .pricingTable .pricingTable-signup:hover{
+            background: #fff;
+            color: #7B68EE;
+        }
+        .pricingTable .pricingTable-trans{
+            padding: 8px 40px;
+            background: #7B68EE;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: capitalize;
+            border: 2px solid #7B68EE;
+            border-radius: 30px;
+            transition: all 0.5s ease 0s;
+        }
+        .pricingTable .pricingTable-trans:hover{
+            background: #fff;
+            color: #7B68EE;
+        }
+        @media only screen and (max-width: 990px){
+            .pricingTable{ margin-bottom: 30px; }
+        }
+    </style>
+
+</head>
+<body>
+<div class="demo">
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="row clearfix">
+                <div class="divcss5-bottom">
+                    <h1>
+                        Multi-Currency Wallet
+                    </h1>
+                </div>
+                <div class="col-md-2 column">
+                </div>
+            </div>
+            <div class = "divcss5-bottom" id="login_win" style="display: block;">
+                <form onsubmit="event.preventDefault();" role="search">
+                    <input id="login" type="search" placeholder="You Name?" autofocus required />
+                    <button id="login_b" type="submit">Login</button>
+                </form>
+            </div>
+            <div class="row clearfix" id="money" style="display: none;">
+                <div class="col-md-12 column">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="pricingTable">
+                            <h3 class="title">HKD</h3>
+                            <div class="price-value">
+                                <span class="month">BOCHK</span>
+                                <span class="amount">
+                                <span class="currency">$</span>
+                                    <p id="HKD_1"> **</p>
+                                <span class="value" id="HKD_0">**</span>
+                            </span>
+                            </div>
+                            <ul class="pricing-content">
+                                <a href="#" class="pricingTable-signup" id="HKD_A">Amount</a>
+                            </ul>
+                            <a href="#" class="pricingTable-signup" id="HKD_T">Transfer</a>
+                            <input id="HKD_Trans" type="trans" placeholder="Amount" style = "display: none;" oninput = "value=value.replace(/[^\d]/g,'')"/>
+                            <a href="#" class="pricingTable-trans" style="display: none;" id="HKD_CNY">CNY</a>
+                            <a href="#" class="pricingTable-trans" style="display: none;" id="HKD_USD">USD</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="pricingTable">
+                            <h3 class="title">CNY</h3>
+                            <div class="price-value">
+                                <span class="month">BOC</span>
+                                <span class="amount">
+                                <span class="currency">¥</span>
+                                <p id="CNY_1"> **</p>
+                                <span class="value" id="CNY_0">**</span>
+                            </span>
+                            </div>
+                            <ul class="pricing-content">
+                                <a href="#" class="pricingTable-signup" id="CNY_A">Amount</a>
+                            </ul>
+                            <a href="#" class="pricingTable-signup" id="CNY_T">Transfer</a>
+                            <input id="CNY_Trans" type="trans" placeholder="Amount" style = "display: none;" oninput = "value=value.replace(/[^\d]/g,'')"/>
+                            <a href="#" class="pricingTable-trans" style="display: none;" id="CNY_HKD">HKD</a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="pricingTable">
+                            <h3 class="title">USD</h3>
+                            <div class="price-value">
+                                <span class="month">BOA</span>
+                                <span class="amount">
+                                <span class="currency">$</span>
+                                <p id="USD_1"> **</p>
+                                <span class="value" id="USD_0">**</span>
+                            </span>
+                            </div>
+                            <ul class="pricing-content">
+                                <a href="#" class="pricingTable-signup" id="USD_A">Amount</a>
+                            </ul>
+                            <a href="#" class="pricingTable-signup" id="USD_T">Transfer</a>
+                            <input id="USD_Trans" type="trans" placeholder="Amount" style = "display: none;" oninput = "value=value.replace(/[^\d]/g,'')"/>
+                            <a href="#" class="pricingTable-trans" style="display: none;" id="USD_HKD">HKD</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class = "divcss5-bottom" id="create_div" style="display: none;">
+        <form onsubmit="event.preventDefault();" role="search">
+            <label for="search">Search for stuff</label>
+            <input id="search" type="search" placeholder="No Account? Enter the KEY!" oninput = "value=value.replace(/[^\d]/g,'')" autofocus required />
+            <button id="create_b" type="submit">Create</button>
+        </form>
+            <p style = "margin-top: 10px;" id="create_message">Pleas input Cust ID first!</p>
+        </div>
+    </div>
+</div>
+</div>
+<!-- jQuery (Bootstrap 的 JavaScript 插件需要引入 jQuery) -->
+<script src="https://code.jquery.com/jquery.js"></script>
+<!-- 包括所有已编译的插件 -->
+<script src="js/bootstrap.min.js"></script>
+<script src="user.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>bank</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shiv 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <h3>
+                Welcome to BOC!
+            </h3>
+            <p>
+                This is the dashboard for BOC.
+            </p>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-6 column">
+            <table class="table" id="mytable">
+                <thead>
+                <tr>
+                    <th>
+                        No.
+                    </th>
+                    <th>
+                        creation time
+                    </th>
+                    <th>
+                        user name
+                    </th>
+                    <th>
+                        account id
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <div class="form-group">
+                <label for="uid">user id</label><input class="form-control" type="text" id="uid" />
+            </div>
+            <div class="form-group">
+                <label for="uid">name</label><input class="form-control" type="text" id="uname" />
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount</label><input class="form-control" type="text" id="amount" />
+            </div>
+            <button type="submit" class="btn btn-default" id="submit">Submit</button>
+
+
+        </div>
+        <div class="col-md-6 column">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Transaction Logs
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    Create account Quila of bank BOC at 2020-07-27 16:09:05.
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn-default" id="refresh">Refresh</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <br><br>
+            <p id="message">
+                This is the demo webpage of bank dashboard of Multi-Currency Wallet.
+            </p>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+        </div>
+    </div>
+</div>
+
+<!-- jQuery (Bootstrap 的 JavaScript 插件需要引入 jQuery) -->
+<script src="https://code.jquery.com/jquery.js"></script>
+<!-- 包括所有已编译的插件 -->
+<script src="js/bootstrap.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
